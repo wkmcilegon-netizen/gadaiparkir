@@ -93,28 +93,25 @@ function CelPage() {
         <div className="space-y-3">
           {menunggu.map((v) => (
             <div key={v.id} className="rounded-xl border border-border bg-card p-3 shadow-panel">
-              <div className="flex gap-3">
-                <PhotoBukti
-                  path={v.photo_path}
-                  alt={`Bukti ${v.plat_nomor}`}
-                  className="size-20 shrink-0"
-                />
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <p className="text-xs font-bold">{v.jenis_kendaraan}</p>
-                      <p className="font-mono text-[11px] font-bold text-primary">{v.plat_nomor}</p>
-                    </div>
-                    <StatusBadge status={v.status as VehicleStatus} />
+              <div className="min-w-0 flex-1">
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <p className="text-xs font-bold">{v.jenis_kendaraan}</p>
+                    <p className="font-mono text-[11px] font-bold text-primary">{v.plat_nomor}</p>
                   </div>
-                  <dl className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 text-[10px]">
-                    <Row label="Tgl Masuk" value={formatTanggal(v.tanggal_masuk)} />
-                    <Row label="Tahun" value={String(v.tahun)} />
-                    <Row label="Pokok" value={formatRupiah(v.nominal_pokok)} />
-                    <Row label="Jasa Parkir" value={formatRupiah(v.jasa_parkir)} />
-                    <Row label="Jumlah Hari" value={`${hitungJumlahHari(v.tanggal_masuk)} hari`} />
-                  </dl>
+                  <StatusBadge status={v.status as VehicleStatus} />
                 </div>
+                <dl className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 text-[10px]">
+                  <Row label="Tgl Masuk" value={formatTanggal(v.tanggal_masuk)} />
+                  <Row label="Tahun" value={String(v.tahun)} />
+                  <Row label="Pokok" value={formatRupiah(v.nominal_pokok)} />
+                  <Row label="Jasa Parkir" value={formatRupiah(v.jasa_parkir)} />
+                  <Row label="Jumlah Hari" value={`${hitungJumlahHari(v.tanggal_masuk)} hari`} />
+                  <Row
+                    label="Tgl Kirim"
+                    value={v.tanggal_kirim ? formatTanggal(v.tanggal_kirim) : "—"}
+                  />
+                </dl>
               </div>
               <Button
                 onClick={() =>
