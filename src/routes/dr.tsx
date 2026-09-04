@@ -304,6 +304,7 @@ function KirimLaporanDialog({ vehicle, username }: { vehicle: Vehicle; username:
   const [open, setOpen] = useState(false);
   const [tujuan, setTujuan] = useState<"Jasa Parkir" | "Tebus">("Jasa Parkir");
   const [nominal, setNominal] = useState("");
+  const [tanggalKirim, setTanggalKirim] = useState(todayISO());
   const [proses, setProses] = useState(false);
 
   async function kirim() {
@@ -356,9 +357,9 @@ function KirimLaporanDialog({ vehicle, username }: { vehicle: Vehicle; username:
       }
       toast.success("Laporan terkirim ke Cel.");
       setNominal("");
+      setTanggalKirim(todayISO());
       setOpen(false);
       queryClient.invalidateQueries({ queryKey: ["vehicles"] });
-      queryClient.invalidateQueries({ queryKey: ["activity_logs"] });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Gagal mengirim laporan.");
     } finally {
