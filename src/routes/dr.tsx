@@ -326,6 +326,7 @@ function KirimLaporanDialog({ vehicle, username }: { vehicle: Vehicle; username:
             dikirim_ke_cel: true,
             dikonfirmasi_cel: false,
             dikonfirmasi_at: null,
+            tanggal_kirim: tanggalKirim,
           })
           .eq("id", vehicle.id);
         if (error) throw error;
@@ -344,6 +345,7 @@ function KirimLaporanDialog({ vehicle, username }: { vehicle: Vehicle; username:
             dikirim_ke_cel: true,
             dikonfirmasi_cel: false,
             dikonfirmasi_at: null,
+            tanggal_kirim: tanggalKirim,
           })
           .eq("id", vehicle.id);
         if (error) throw error;
