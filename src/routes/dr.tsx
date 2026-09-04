@@ -409,6 +409,20 @@ function KirimLaporanDialog({ vehicle, username }: { vehicle: Vehicle; username:
             </Select>
           </div>
 
+          <div className="space-y-1.5">
+            <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+              Tanggal Pengiriman
+            </Label>
+            <Input
+              type="date"
+              value={tanggalKirim}
+              onChange={(e) => setTanggalKirim(e.target.value)}
+            />
+            <p className="text-[10px] text-muted-foreground">
+              Tanggal, bulan, dan tahun laporan ini dikirim ke Cel.
+            </p>
+          </div>
+
           {tujuan === "Jasa Parkir" && (
             <div className="space-y-1.5">
               <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
