@@ -37,7 +37,6 @@ function CelPage() {
   const { username } = useAuth();
   const queryClient = useQueryClient();
   const { data: vehicles = [], isLoading } = useVehicles();
-  const { data: logs = [] } = useActivity();
   useRealtimeSync();
 
   const menunggu = vehicles.filter((v) => v.dikirim_ke_cel && !v.dikonfirmasi_cel);
@@ -61,7 +60,6 @@ function CelPage() {
     });
     toast.success("Laporan dikonfirmasi.");
     queryClient.invalidateQueries({ queryKey: ["vehicles"] });
-    queryClient.invalidateQueries({ queryKey: ["activity_logs"] });
   }
 
   return (
