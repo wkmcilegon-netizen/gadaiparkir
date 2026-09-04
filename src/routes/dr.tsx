@@ -1,11 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { Upload, Plus, Send, Activity } from "lucide-react";
+import { Plus, Send } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
 import { StatusBadge, type VehicleStatus } from "@/components/StatusBadge";
-import { PhotoBukti } from "@/components/PhotoBukti";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -26,10 +25,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import {
-  BUCKET,
   catatAktivitas,
-  hapusFotoKedaluwarsa,
-  useActivity,
   useRealtimeSync,
   useVehicles,
   type Vehicle,
@@ -41,7 +37,6 @@ import {
   hitungJumlahHari,
   parseRupiahInput,
   todayISO,
-  waktuRelatif,
 } from "@/lib/format";
 
 export const Route = createFileRoute("/dr")({
@@ -69,22 +64,8 @@ export const Route = createFileRoute("/dr")({
 
 function DrPage() {
   const { username } = useAuth();
-  const queryClient = useQueryClient();
   const { data: vehicles = [], isLoading } = useVehicles();
-  const { data: logs = [] } = useActivity();
   useRealtimeSync();
-
-  // Retensi otomatis: bersihkan foto yang usianya lebih dari 3 bulan.
-  useEffect(() => {
-    if (vehicles.length === 0) return;
-    hapusFotoKedaluwarsa(vehicles).then((n) => {
-      if (n > 0) {
-        queryClient.invalidateQueries({ queryKey: ["vehicles"] });
-        toast.info(`${n} foto bukti lama dihapus otomatis (retensi 3 bulan).`);
-      }
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [vehicles.length]);
 
   const totalPokok = useMemo(
     () => vehicles.reduce((s, v) => s + Number(v.nominal_pokok), 0),
@@ -129,7 +110,7 @@ function DrPage() {
                   "Jasa Parkir",
                   "Hari",
                   "Status",
-                  "Bukti",
+                  "Tgl Kirim",
                   "Kirim",
                 ].map((h) => (
                   <th
@@ -182,8 +163,8 @@ function DrPage() {
                   <td className="border border-border px-3 py-2.5 text-center">
                     <StatusBadge status={v.status as VehicleStatus} />
                   </td>
-                  <td className="border border-border px-2 py-2.5">
-                    <PhotoBukti path={v.photo_path} alt={`Bukti ${v.plat_nomor}`} className="size-10" />
+                  <td className="whitespace-nowrap border border-border px-3 py-2.5 text-center font-mono text-[11px]">
+                    {v.tanggal_kirim ? formatTanggal(v.tanggal_kirim) : "—"}
                   </td>
                   <td className="border border-border px-2 py-2.5 text-center">
                     <KirimLaporanDialog vehicle={v} username={username ?? "omdru"} />
@@ -196,31 +177,6 @@ function DrPage() {
       </section>
 
       <FormInputKendaraan username={username ?? "omdru"} />
-
-      <section id="aktivitas" className="scroll-mt-24">
-        <div className="mb-3 flex items-center gap-2">
-          <Activity className="size-3.5 text-primary" />
-          <h2 className="text-xs font-bold uppercase tracking-wide">Riwayat Aktivitas</h2>
-        </div>
-        <div className="space-y-2">
-          {logs.length === 0 && (
-            <p className="rounded-lg border border-dashed border-border bg-card p-4 text-center text-[11px] text-muted-foreground">
-              Belum ada aktivitas tercatat.
-            </p>
-          )}
-          {logs.slice(0, 8).map((log) => (
-            <div key={log.id} className="rounded-lg border border-border bg-card p-3">
-              <p className="text-[11px] font-medium">
-                <span className="font-bold">{log.actor_username}</span> {log.action}
-              </p>
-              {log.detail && <p className="mt-0.5 text-[10px] text-muted-foreground">{log.detail}</p>}
-              <p className="mt-1 font-mono text-[9px] uppercase text-muted-foreground">
-                {waktuRelatif(log.created_at)}
-              </p>
-            </div>
-          ))}
-        </div>
-      </section>
     </div>
   );
 }
@@ -254,7 +210,6 @@ function FormInputKendaraan({ username }: { username: string }) {
   const [tahun, setTahun] = useState("");
   const [tanggal, setTanggal] = useState(todayISO());
   const [pokok, setPokok] = useState("");
-  const [file, setFile] = useState<File | null>(null);
   const [proses, setProses] = useState(false);
 
   async function submit(e: React.FormEvent) {
@@ -265,15 +220,6 @@ function FormInputKendaraan({ username }: { username: string }) {
     }
     setProses(true);
     try {
-      let photoPath: string | null = null;
-      if (file) {
-        const ext = file.name.split(".").pop() ?? "jpg";
-        const path = `${crypto.randomUUID()}.${ext}`;
-        const { error: upErr } = await supabase.storage.from(BUCKET).upload(path, file);
-        if (upErr) throw upErr;
-        photoPath = path;
-      }
-
       const { data, error } = await supabase
         .from("vehicles")
         .insert({
@@ -282,8 +228,6 @@ function FormInputKendaraan({ username }: { username: string }) {
           tahun: parseInt(tahun, 10),
           tanggal_masuk: tanggal,
           nominal_pokok: parseRupiahInput(pokok),
-          photo_path: photoPath,
-          photo_uploaded_at: photoPath ? new Date().toISOString() : null,
         })
         .select()
         .single();
@@ -302,10 +246,8 @@ function FormInputKendaraan({ username }: { username: string }) {
       setPlat("");
       setTahun("");
       setPokok("");
-      setFile(null);
       setTanggal(todayISO());
       queryClient.invalidateQueries({ queryKey: ["vehicles"] });
-      queryClient.invalidateQueries({ queryKey: ["activity_logs"] });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Gagal menyimpan data.");
     } finally {
@@ -318,7 +260,7 @@ function FormInputKendaraan({ username }: { username: string }) {
       <div className="mb-4 flex items-start justify-between">
         <div>
           <h3 className="text-sm font-bold">Input Unit Baru</h3>
-          <p className="text-[10px] text-navy-foreground/60">Pastikan foto bukti terlampir jelas</p>
+          <p className="text-[10px] text-navy-foreground/60">Lengkapi data kendaraan dengan benar</p>
         </div>
         <div className="rounded-lg bg-primary/20 p-2">
           <Plus className="size-4 text-primary" />
@@ -372,24 +314,6 @@ function FormInputKendaraan({ username }: { username: string }) {
           />
         </Field>
 
-        <label className="grid aspect-[16/9] w-full cursor-pointer place-items-center rounded-lg border border-dashed border-navy-foreground/20 bg-navy-foreground/5 transition-colors hover:bg-navy-foreground/10">
-          <input
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-          />
-          <div className="text-center">
-            <Upload className="mx-auto mb-2 size-4 text-navy-foreground/40" />
-            <span className="text-[9px] font-medium uppercase tracking-[0.15em] text-navy-foreground/40">
-              {file ? file.name : "Unggah Bukti Foto"}
-            </span>
-            <p className="mt-1 text-[8px] text-navy-foreground/30">
-              Terhapus otomatis setelah 3 bulan
-            </p>
-          </div>
-        </label>
-
         <Button type="submit" disabled={proses} className="w-full font-bold uppercase tracking-widest">
           {proses ? "Menyimpan…" : "Simpan Kendaraan"}
         </Button>
@@ -414,6 +338,7 @@ function KirimLaporanDialog({ vehicle, username }: { vehicle: Vehicle; username:
   const [open, setOpen] = useState(false);
   const [tujuan, setTujuan] = useState<"Jasa Parkir" | "Tebus">("Jasa Parkir");
   const [nominal, setNominal] = useState("");
+  const [tanggalKirim, setTanggalKirim] = useState(todayISO());
   const [proses, setProses] = useState(false);
 
   async function kirim() {
@@ -435,6 +360,7 @@ function KirimLaporanDialog({ vehicle, username }: { vehicle: Vehicle; username:
             dikirim_ke_cel: true,
             dikonfirmasi_cel: false,
             dikonfirmasi_at: null,
+            tanggal_kirim: tanggalKirim,
           })
           .eq("id", vehicle.id);
         if (error) throw error;
@@ -453,6 +379,7 @@ function KirimLaporanDialog({ vehicle, username }: { vehicle: Vehicle; username:
             dikirim_ke_cel: true,
             dikonfirmasi_cel: false,
             dikonfirmasi_at: null,
+            tanggal_kirim: tanggalKirim,
           })
           .eq("id", vehicle.id);
         if (error) throw error;
@@ -466,9 +393,9 @@ function KirimLaporanDialog({ vehicle, username }: { vehicle: Vehicle; username:
       }
       toast.success("Laporan terkirim ke Cel.");
       setNominal("");
+      setTanggalKirim(todayISO());
       setOpen(false);
       queryClient.invalidateQueries({ queryKey: ["vehicles"] });
-      queryClient.invalidateQueries({ queryKey: ["activity_logs"] });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Gagal mengirim laporan.");
     } finally {
@@ -514,6 +441,20 @@ function KirimLaporanDialog({ vehicle, username }: { vehicle: Vehicle; username:
                 <SelectItem value="Tebus">Tebus (status jadi Lunas)</SelectItem>
               </SelectContent>
             </Select>
+          </div>
+
+          <div className="space-y-1.5">
+            <Label className="text-[10px] font-bold uppercase tracking-wider text-muted-foreground">
+              Tanggal Pengiriman
+            </Label>
+            <Input
+              type="date"
+              value={tanggalKirim}
+              onChange={(e) => setTanggalKirim(e.target.value)}
+            />
+            <p className="text-[10px] text-muted-foreground">
+              Tanggal, bulan, dan tahun laporan ini dikirim ke Cel.
+            </p>
           </div>
 
           {tujuan === "Jasa Parkir" && (

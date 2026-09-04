@@ -108,6 +108,7 @@ export type Database = {
           plat_nomor: string
           status: Database["public"]["Enums"]["vehicle_status"]
           tahun: number
+          tanggal_kirim: string | null
           tanggal_masuk: string
           updated_at: string
         }
@@ -127,6 +128,7 @@ export type Database = {
           plat_nomor: string
           status?: Database["public"]["Enums"]["vehicle_status"]
           tahun: number
+          tanggal_kirim?: string | null
           tanggal_masuk?: string
           updated_at?: string
         }
@@ -146,6 +148,7 @@ export type Database = {
           plat_nomor?: string
           status?: Database["public"]["Enums"]["vehicle_status"]
           tahun?: number
+          tanggal_kirim?: string | null
           tanggal_masuk?: string
           updated_at?: string
         }

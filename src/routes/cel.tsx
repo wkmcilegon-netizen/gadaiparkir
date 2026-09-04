@@ -1,15 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { CheckCircle2, Activity, Inbox } from "lucide-react";
+import { CheckCircle2, Inbox } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
 import { StatusBadge, type VehicleStatus } from "@/components/StatusBadge";
-import { PhotoBukti } from "@/components/PhotoBukti";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
-import { catatAktivitas, useActivity, useRealtimeSync, useVehicles } from "@/lib/vehicles";
-import { formatRupiah, formatTanggal, hitungJumlahHari, waktuRelatif } from "@/lib/format";
+import { catatAktivitas, useRealtimeSync, useVehicles } from "@/lib/vehicles";
+import { formatRupiah, formatTanggal, hitungJumlahHari } from "@/lib/format";
 
 export const Route = createFileRoute("/cel")({
   head: () => ({
@@ -38,7 +37,6 @@ function CelPage() {
   const { username } = useAuth();
   const queryClient = useQueryClient();
   const { data: vehicles = [], isLoading } = useVehicles();
-  const { data: logs = [] } = useActivity();
   useRealtimeSync();
 
   const menunggu = vehicles.filter((v) => v.dikirim_ke_cel && !v.dikonfirmasi_cel);
@@ -62,7 +60,6 @@ function CelPage() {
     });
     toast.success("Laporan dikonfirmasi.");
     queryClient.invalidateQueries({ queryKey: ["vehicles"] });
-    queryClient.invalidateQueries({ queryKey: ["activity_logs"] });
   }
 
   return (
@@ -96,28 +93,25 @@ function CelPage() {
         <div className="space-y-3">
           {menunggu.map((v) => (
             <div key={v.id} className="rounded-xl border border-border bg-card p-3 shadow-panel">
-              <div className="flex gap-3">
-                <PhotoBukti
-                  path={v.photo_path}
-                  alt={`Bukti ${v.plat_nomor}`}
-                  className="size-20 shrink-0"
-                />
-                <div className="min-w-0 flex-1">
-                  <div className="flex items-start justify-between gap-2">
-                    <div>
-                      <p className="text-xs font-bold">{v.jenis_kendaraan}</p>
-                      <p className="font-mono text-[11px] font-bold text-primary">{v.plat_nomor}</p>
-                    </div>
-                    <StatusBadge status={v.status as VehicleStatus} />
+              <div className="min-w-0 flex-1">
+                <div className="flex items-start justify-between gap-2">
+                  <div>
+                    <p className="text-xs font-bold">{v.jenis_kendaraan}</p>
+                    <p className="font-mono text-[11px] font-bold text-primary">{v.plat_nomor}</p>
                   </div>
-                  <dl className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 text-[10px]">
-                    <Row label="Tgl Masuk" value={formatTanggal(v.tanggal_masuk)} />
-                    <Row label="Tahun" value={String(v.tahun)} />
-                    <Row label="Pokok" value={formatRupiah(v.nominal_pokok)} />
-                    <Row label="Jasa Parkir" value={formatRupiah(v.jasa_parkir)} />
-                    <Row label="Jumlah Hari" value={`${hitungJumlahHari(v.tanggal_masuk)} hari`} />
-                  </dl>
+                  <StatusBadge status={v.status as VehicleStatus} />
                 </div>
+                <dl className="mt-2 grid grid-cols-2 gap-x-3 gap-y-1 text-[10px]">
+                  <Row label="Tgl Masuk" value={formatTanggal(v.tanggal_masuk)} />
+                  <Row label="Tahun" value={String(v.tahun)} />
+                  <Row label="Pokok" value={formatRupiah(v.nominal_pokok)} />
+                  <Row label="Jasa Parkir" value={formatRupiah(v.jasa_parkir)} />
+                  <Row label="Jumlah Hari" value={`${hitungJumlahHari(v.tanggal_masuk)} hari`} />
+                  <Row
+                    label="Tgl Kirim"
+                    value={v.tanggal_kirim ? formatTanggal(v.tanggal_kirim) : "—"}
+                  />
+                </dl>
               </div>
               <Button
                 onClick={() =>
@@ -140,36 +134,13 @@ function CelPage() {
           <table className="w-full border-collapse text-left">
             <thead>
               <tr className="bg-secondary/50">
-                {["Tgl Masuk", "Jenis", "Plat", "Pokok", "Jasa Parkir", "Hari", "Status"].map((h) => (
-                  <th
-                    key={h}
-                    className="border border-border px-3 py-2 text-[10px] font-bold uppercase text-muted-foreground"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {vehicles.map((v) => (
-                <tr key={v.id} className="hover:bg-secondary/50">
-                  <td className="whitespace-nowrap border border-border px-3 py-2.5 font-mono text-[11px]">
-                    {formatTanggal(v.tanggal_masuk)}
-                  </td>
-                  <td className="whitespace-nowrap border border-border px-3 py-2.5 text-[11px] font-semibold">
-                    {v.jenis_kendaraan}
-                  </td>
-                  <td className="whitespace-nowrap border border-border px-3 py-2.5 font-mono text-[11px] font-bold">
-                    {v.plat_nomor}
-                  </td>
-                  <td className="whitespace-nowrap border border-border px-3 py-2.5 text-right font-mono text-[11px]">
-                    {formatRupiah(v.nominal_pokok)}
-                  </td>
-                  <td className="whitespace-nowrap border border-border px-3 py-2.5 text-right font-mono text-[11px]">
-                    {formatRupiah(v.jasa_parkir)}
-                  </td>
+                {["Tgl Masuk", "Jenis", "Plat", "Pokok", "Jasa Parkir", "Hari", "Tgl Kirim", "Status"].map((h) => (
+...
                   <td className="border border-border px-3 py-2.5 text-center text-[11px]">
                     {hitungJumlahHari(v.tanggal_masuk)}
+                  </td>
+                  <td className="whitespace-nowrap border border-border px-3 py-2.5 text-center font-mono text-[11px]">
+                    {v.tanggal_kirim ? formatTanggal(v.tanggal_kirim) : "—"}
                   </td>
                   <td className="border border-border px-3 py-2.5 text-center">
                     <StatusBadge status={v.status as VehicleStatus} />
@@ -178,31 +149,6 @@ function CelPage() {
               ))}
             </tbody>
           </table>
-        </div>
-      </section>
-
-      <section id="aktivitas" className="scroll-mt-24">
-        <div className="mb-3 flex items-center gap-2">
-          <Activity className="size-3.5 text-primary" />
-          <h2 className="text-xs font-bold uppercase tracking-wide">Transparansi Aktivitas Dr</h2>
-        </div>
-        <div className="space-y-2">
-          {logs.length === 0 && (
-            <p className="rounded-lg border border-dashed border-border bg-card p-4 text-center text-[11px] text-muted-foreground">
-              Belum ada aktivitas tercatat.
-            </p>
-          )}
-          {logs.map((log) => (
-            <div key={log.id} className="rounded-lg border border-border bg-card p-3">
-              <p className="text-[11px] font-medium">
-                <span className="font-bold">{log.actor_username}</span> {log.action}
-              </p>
-              {log.detail && <p className="mt-0.5 text-[10px] text-muted-foreground">{log.detail}</p>}
-              <p className="mt-1 font-mono text-[9px] uppercase text-muted-foreground">
-                {waktuRelatif(log.created_at)}
-              </p>
-            </div>
-          ))}
         </div>
       </section>
     </div>
