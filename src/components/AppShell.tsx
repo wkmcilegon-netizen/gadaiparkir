@@ -10,12 +10,10 @@ const NAV: Record<AppRole, NavItem[]> = {
   dr: [
     { label: "Dashboard", to: "/dr" },
     { label: "Input Kendaraan", to: "/dr", hash: "input" },
-    { label: "Aktivitas", to: "/dr", hash: "aktivitas" },
     { label: "Pengaturan", to: "/pengaturan" },
   ],
   cel: [
     { label: "Konfirmasi", to: "/cel" },
-    { label: "Aktivitas", to: "/cel", hash: "aktivitas" },
     { label: "Pengaturan", to: "/pengaturan" },
   ],
 };

@@ -1,15 +1,14 @@
 import { createFileRoute } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { CheckCircle2, Activity, Inbox } from "lucide-react";
+import { CheckCircle2, Inbox } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
 import { StatusBadge, type VehicleStatus } from "@/components/StatusBadge";
-import { PhotoBukti } from "@/components/PhotoBukti";
 import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
-import { catatAktivitas, useActivity, useRealtimeSync, useVehicles } from "@/lib/vehicles";
-import { formatRupiah, formatTanggal, hitungJumlahHari, waktuRelatif } from "@/lib/format";
+import { catatAktivitas, useRealtimeSync, useVehicles } from "@/lib/vehicles";
+import { formatRupiah, formatTanggal, hitungJumlahHari } from "@/lib/format";
 
 export const Route = createFileRoute("/cel")({
   head: () => ({
