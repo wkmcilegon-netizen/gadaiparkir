@@ -9,7 +9,7 @@ export function parseRupiahInput(raw: string): number {
 }
 
 export function formatTanggal(iso: string): string {
-  const [y, m, d] = iso.split("T")[0].split("-");
+  const [y, m, d] = (iso.split("T")[0] ?? iso).split("-");
   return `${d}/${m}/${y}`;
 }
 

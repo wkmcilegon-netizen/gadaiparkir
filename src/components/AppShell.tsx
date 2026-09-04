@@ -4,7 +4,7 @@ import { LogOut } from "lucide-react";
 import logoAsset from "@/assets/ghighais-logo.png.asset.json";
 import { AKUN, useAuth, type AppRole } from "@/lib/auth";
 
-type NavItem = { label: string; to?: string; hash?: string };
+type NavItem = { label: string; to: "/dr" | "/cel" | "/pengaturan"; hash?: string };
 
 const NAV: Record<AppRole, NavItem[]> = {
   dr: [
@@ -94,7 +94,7 @@ export function AppShell({
             <Link
               key={item.label}
               to={item.to}
-              hash={item.hash}
+              {...(item.hash ? { hash: item.hash } : {})}
               className={
                 isActive
                   ? "whitespace-nowrap border-b-2 border-primary pb-1 text-xs font-bold text-primary"
