@@ -1,11 +1,10 @@
-import { useEffect, useMemo, useState } from "react";
+import { useMemo, useState } from "react";
 import { createFileRoute } from "@tanstack/react-router";
 import { useQueryClient } from "@tanstack/react-query";
-import { Upload, Plus, Send, Activity } from "lucide-react";
+import { Plus, Send } from "lucide-react";
 import { toast } from "sonner";
 import { AppShell } from "@/components/AppShell";
 import { StatusBadge, type VehicleStatus } from "@/components/StatusBadge";
-import { PhotoBukti } from "@/components/PhotoBukti";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -26,10 +25,7 @@ import {
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import {
-  BUCKET,
   catatAktivitas,
-  hapusFotoKedaluwarsa,
-  useActivity,
   useRealtimeSync,
   useVehicles,
   type Vehicle,
@@ -41,7 +37,6 @@ import {
   hitungJumlahHari,
   parseRupiahInput,
   todayISO,
-  waktuRelatif,
 } from "@/lib/format";
 
 export const Route = createFileRoute("/dr")({
@@ -69,22 +64,8 @@ export const Route = createFileRoute("/dr")({
 
 function DrPage() {
   const { username } = useAuth();
-  const queryClient = useQueryClient();
   const { data: vehicles = [], isLoading } = useVehicles();
-  const { data: logs = [] } = useActivity();
   useRealtimeSync();
-
-  // Retensi otomatis: bersihkan foto yang usianya lebih dari 3 bulan.
-  useEffect(() => {
-    if (vehicles.length === 0) return;
-    hapusFotoKedaluwarsa(vehicles).then((n) => {
-      if (n > 0) {
-        queryClient.invalidateQueries({ queryKey: ["vehicles"] });
-        toast.info(`${n} foto bukti lama dihapus otomatis (retensi 3 bulan).`);
-      }
-    });
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [vehicles.length]);
 
   const totalPokok = useMemo(
     () => vehicles.reduce((s, v) => s + Number(v.nominal_pokok), 0),
