@@ -280,24 +280,6 @@ function FormInputKendaraan({ username }: { username: string }) {
           />
         </Field>
 
-        <label className="grid aspect-[16/9] w-full cursor-pointer place-items-center rounded-lg border border-dashed border-navy-foreground/20 bg-navy-foreground/5 transition-colors hover:bg-navy-foreground/10">
-          <input
-            type="file"
-            accept="image/*"
-            className="hidden"
-            onChange={(e) => setFile(e.target.files?.[0] ?? null)}
-          />
-          <div className="text-center">
-            <Upload className="mx-auto mb-2 size-4 text-navy-foreground/40" />
-            <span className="text-[9px] font-medium uppercase tracking-[0.15em] text-navy-foreground/40">
-              {file ? file.name : "Unggah Bukti Foto"}
-            </span>
-            <p className="mt-1 text-[8px] text-navy-foreground/30">
-              Terhapus otomatis setelah 3 bulan
-            </p>
-          </div>
-        </label>
-
         <Button type="submit" disabled={proses} className="w-full font-bold uppercase tracking-widest">
           {proses ? "Menyimpan…" : "Simpan Kendaraan"}
         </Button>
