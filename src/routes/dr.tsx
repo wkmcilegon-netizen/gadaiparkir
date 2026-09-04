@@ -226,7 +226,7 @@ function FormInputKendaraan({ username }: { username: string }) {
       <div className="mb-4 flex items-start justify-between">
         <div>
           <h3 className="text-sm font-bold">Input Unit Baru</h3>
-          <p className="text-[10px] text-navy-foreground/60">Pastikan foto bukti terlampir jelas</p>
+          <p className="text-[10px] text-navy-foreground/60">Lengkapi data kendaraan dengan benar</p>
         </div>
         <div className="rounded-lg bg-primary/20 p-2">
           <Plus className="size-4 text-primary" />
