@@ -12,6 +12,7 @@ import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as CelRouteImport } from './routes/cel'
 import { Route as DrRouteImport } from './routes/dr'
+import { Route as PengaturanRouteImport } from './routes/pengaturan'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
@@ -28,35 +29,44 @@ const DrRoute = DrRouteImport.update({
   path: '/dr',
   getParentRoute: () => rootRouteImport,
 } as any)
+const PengaturanRoute = PengaturanRouteImport.update({
+  id: '/pengaturan',
+  path: '/pengaturan',
+  getParentRoute: () => rootRouteImport,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/cel': typeof CelRoute
   '/dr': typeof DrRoute
+  '/pengaturan': typeof PengaturanRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/cel': typeof CelRoute
   '/dr': typeof DrRoute
+  '/pengaturan': typeof PengaturanRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/cel': typeof CelRoute
   '/dr': typeof DrRoute
+  '/pengaturan': typeof PengaturanRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/cel' | '/dr'
+  fullPaths: '/' | '/cel' | '/dr' | '/pengaturan'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/cel' | '/dr'
-  id: '__root__' | '/' | '/cel' | '/dr'
+  to: '/' | '/cel' | '/dr' | '/pengaturan'
+  id: '__root__' | '/' | '/cel' | '/dr' | '/pengaturan'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   CelRoute: typeof CelRoute
   DrRoute: typeof DrRoute
+  PengaturanRoute: typeof PengaturanRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -82,6 +92,13 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof DrRouteImport
       parentRoute: typeof rootRouteImport
     }
+    '/pengaturan': {
+      id: '/pengaturan'
+      path: '/pengaturan'
+      fullPath: '/pengaturan'
+      preLoaderRoute: typeof PengaturanRouteImport
+      parentRoute: typeof rootRouteImport
+    }
   }
 }
 
@@ -89,6 +106,7 @@ const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   CelRoute: CelRoute,
   DrRoute: DrRoute,
+  PengaturanRoute: PengaturanRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
