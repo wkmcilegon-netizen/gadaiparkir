@@ -94,7 +94,7 @@ export function AppShell({
             <Link
               key={item.label}
               to={item.to}
-              hash={item.hash}
+              {...(item.hash ? { hash: item.hash } : {})}
               className={
                 isActive
                   ? "whitespace-nowrap border-b-2 border-primary pb-1 text-xs font-bold text-primary"
