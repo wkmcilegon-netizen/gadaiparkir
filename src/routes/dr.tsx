@@ -176,7 +176,6 @@ function FormInputKendaraan({ username }: { username: string }) {
   const [tahun, setTahun] = useState("");
   const [tanggal, setTanggal] = useState(todayISO());
   const [pokok, setPokok] = useState("");
-  const [file, setFile] = useState<File | null>(null);
   const [proses, setProses] = useState(false);
 
   async function submit(e: React.FormEvent) {
@@ -187,15 +186,6 @@ function FormInputKendaraan({ username }: { username: string }) {
     }
     setProses(true);
     try {
-      let photoPath: string | null = null;
-      if (file) {
-        const ext = file.name.split(".").pop() ?? "jpg";
-        const path = `${crypto.randomUUID()}.${ext}`;
-        const { error: upErr } = await supabase.storage.from(BUCKET).upload(path, file);
-        if (upErr) throw upErr;
-        photoPath = path;
-      }
-
       const { data, error } = await supabase
         .from("vehicles")
         .insert({
@@ -204,8 +194,6 @@ function FormInputKendaraan({ username }: { username: string }) {
           tahun: parseInt(tahun, 10),
           tanggal_masuk: tanggal,
           nominal_pokok: parseRupiahInput(pokok),
-          photo_path: photoPath,
-          photo_uploaded_at: photoPath ? new Date().toISOString() : null,
         })
         .select()
         .single();
@@ -224,10 +212,8 @@ function FormInputKendaraan({ username }: { username: string }) {
       setPlat("");
       setTahun("");
       setPokok("");
-      setFile(null);
       setTanggal(todayISO());
       queryClient.invalidateQueries({ queryKey: ["vehicles"] });
-      queryClient.invalidateQueries({ queryKey: ["activity_logs"] });
     } catch (err) {
       toast.error(err instanceof Error ? err.message : "Gagal menyimpan data.");
     } finally {
