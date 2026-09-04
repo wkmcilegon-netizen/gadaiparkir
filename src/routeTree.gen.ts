@@ -10,11 +10,17 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as CelRouteImport } from './routes/cel'
 import { Route as DrRouteImport } from './routes/dr'
 
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const CelRoute = CelRouteImport.update({
+  id: '/cel',
+  path: '/cel',
   getParentRoute: () => rootRouteImport,
 } as any)
 const DrRoute = DrRouteImport.update({
@@ -25,27 +31,31 @@ const DrRoute = DrRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/cel': typeof CelRoute
   '/dr': typeof DrRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/cel': typeof CelRoute
   '/dr': typeof DrRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
+  '/cel': typeof CelRoute
   '/dr': typeof DrRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/dr'
+  fullPaths: '/' | '/cel' | '/dr'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/dr'
-  id: '__root__' | '/' | '/dr'
+  to: '/' | '/cel' | '/dr'
+  id: '__root__' | '/' | '/cel' | '/dr'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
+  CelRoute: typeof CelRoute
   DrRoute: typeof DrRoute
 }
 
@@ -56,6 +66,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/cel': {
+      id: '/cel'
+      path: '/cel'
+      fullPath: '/cel'
+      preLoaderRoute: typeof CelRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/dr': {
@@ -70,6 +87,7 @@ declare module '@tanstack/react-router' {
 
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
+  CelRoute: CelRoute,
   DrRoute: DrRoute,
 }
 export const routeTree = rootRouteImport
