@@ -113,7 +113,16 @@ function DrPage() {
                   "Tgl Kirim",
                   "Kirim",
                 ].map((h) => (
-...
+                  <th
+                    key={h}
+                    className="border border-border px-3 py-2 text-[10px] font-bold uppercase tracking-tight text-muted-foreground"
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
               {isLoading && (
                 <tr>
                   <td colSpan={10} className="border border-border p-6 text-center text-xs text-muted-foreground">
@@ -128,7 +137,32 @@ function DrPage() {
                   </td>
                 </tr>
               )}
-...
+              {vehicles.map((v) => (
+                <tr key={v.id} className="transition-colors hover:bg-secondary/50">
+                  <td className="whitespace-nowrap border border-border px-3 py-2.5 font-mono text-[11px]">
+                    {formatTanggal(v.tanggal_masuk)}
+                  </td>
+                  <td className="whitespace-nowrap border border-border px-3 py-2.5 text-[11px] font-semibold">
+                    {v.jenis_kendaraan}
+                  </td>
+                  <td className="whitespace-nowrap border border-border px-3 py-2.5 font-mono text-[11px] font-bold">
+                    {v.plat_nomor}
+                  </td>
+                  <td className="border border-border px-3 py-2.5 text-center font-mono text-[11px]">
+                    {v.tahun}
+                  </td>
+                  <td className="whitespace-nowrap border border-border px-3 py-2.5 text-right font-mono text-[11px]">
+                    {formatRupiah(v.nominal_pokok)}
+                  </td>
+                  <td className="whitespace-nowrap border border-border px-3 py-2.5 text-right font-mono text-[11px]">
+                    {formatRupiah(v.jasa_parkir)}
+                  </td>
+                  <td className="border border-border px-3 py-2.5 text-center text-[11px] font-medium">
+                    {hitungJumlahHari(v.tanggal_masuk)}
+                  </td>
+                  <td className="border border-border px-3 py-2.5 text-center">
+                    <StatusBadge status={v.status as VehicleStatus} />
+                  </td>
                   <td className="whitespace-nowrap border border-border px-3 py-2.5 text-center font-mono text-[11px]">
                     {v.tanggal_kirim ? formatTanggal(v.tanggal_kirim) : "—"}
                   </td>
