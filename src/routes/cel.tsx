@@ -134,36 +134,13 @@ function CelPage() {
           <table className="w-full border-collapse text-left">
             <thead>
               <tr className="bg-secondary/50">
-                {["Tgl Masuk", "Jenis", "Plat", "Pokok", "Jasa Parkir", "Hari", "Status"].map((h) => (
-                  <th
-                    key={h}
-                    className="border border-border px-3 py-2 text-[10px] font-bold uppercase text-muted-foreground"
-                  >
-                    {h}
-                  </th>
-                ))}
-              </tr>
-            </thead>
-            <tbody>
-              {vehicles.map((v) => (
-                <tr key={v.id} className="hover:bg-secondary/50">
-                  <td className="whitespace-nowrap border border-border px-3 py-2.5 font-mono text-[11px]">
-                    {formatTanggal(v.tanggal_masuk)}
-                  </td>
-                  <td className="whitespace-nowrap border border-border px-3 py-2.5 text-[11px] font-semibold">
-                    {v.jenis_kendaraan}
-                  </td>
-                  <td className="whitespace-nowrap border border-border px-3 py-2.5 font-mono text-[11px] font-bold">
-                    {v.plat_nomor}
-                  </td>
-                  <td className="whitespace-nowrap border border-border px-3 py-2.5 text-right font-mono text-[11px]">
-                    {formatRupiah(v.nominal_pokok)}
-                  </td>
-                  <td className="whitespace-nowrap border border-border px-3 py-2.5 text-right font-mono text-[11px]">
-                    {formatRupiah(v.jasa_parkir)}
-                  </td>
+                {["Tgl Masuk", "Jenis", "Plat", "Pokok", "Jasa Parkir", "Hari", "Tgl Kirim", "Status"].map((h) => (
+...
                   <td className="border border-border px-3 py-2.5 text-center text-[11px]">
                     {hitungJumlahHari(v.tanggal_masuk)}
+                  </td>
+                  <td className="whitespace-nowrap border border-border px-3 py-2.5 text-center font-mono text-[11px]">
+                    {v.tanggal_kirim ? formatTanggal(v.tanggal_kirim) : "—"}
                   </td>
                   <td className="border border-border px-3 py-2.5 text-center">
                     <StatusBadge status={v.status as VehicleStatus} />
@@ -172,31 +149,6 @@ function CelPage() {
               ))}
             </tbody>
           </table>
-        </div>
-      </section>
-
-      <section id="aktivitas" className="scroll-mt-24">
-        <div className="mb-3 flex items-center gap-2">
-          <Activity className="size-3.5 text-primary" />
-          <h2 className="text-xs font-bold uppercase tracking-wide">Transparansi Aktivitas Dr</h2>
-        </div>
-        <div className="space-y-2">
-          {logs.length === 0 && (
-            <p className="rounded-lg border border-dashed border-border bg-card p-4 text-center text-[11px] text-muted-foreground">
-              Belum ada aktivitas tercatat.
-            </p>
-          )}
-          {logs.map((log) => (
-            <div key={log.id} className="rounded-lg border border-border bg-card p-3">
-              <p className="text-[11px] font-medium">
-                <span className="font-bold">{log.actor_username}</span> {log.action}
-              </p>
-              {log.detail && <p className="mt-0.5 text-[10px] text-muted-foreground">{log.detail}</p>}
-              <p className="mt-1 font-mono text-[9px] uppercase text-muted-foreground">
-                {waktuRelatif(log.created_at)}
-              </p>
-            </div>
-          ))}
         </div>
       </section>
     </div>
