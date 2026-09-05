@@ -55,6 +55,62 @@ export type Database = {
           },
         ]
       }
+      pengajuan_nominal: {
+        Row: {
+          archived_at: string | null
+          catatan: string | null
+          created_at: string
+          diajukan_oleh: string
+          diajukan_username: string
+          diputuskan_at: string | null
+          diputuskan_oleh: string | null
+          id: string
+          nominal: number
+          status: Database["public"]["Enums"]["pengajuan_status"]
+          tanggal_kirim: string
+          updated_at: string
+          vehicle_id: string
+        }
+        Insert: {
+          archived_at?: string | null
+          catatan?: string | null
+          created_at?: string
+          diajukan_oleh?: string
+          diajukan_username: string
+          diputuskan_at?: string | null
+          diputuskan_oleh?: string | null
+          id?: string
+          nominal: number
+          status?: Database["public"]["Enums"]["pengajuan_status"]
+          tanggal_kirim?: string
+          updated_at?: string
+          vehicle_id: string
+        }
+        Update: {
+          archived_at?: string | null
+          catatan?: string | null
+          created_at?: string
+          diajukan_oleh?: string
+          diajukan_username?: string
+          diputuskan_at?: string | null
+          diputuskan_oleh?: string | null
+          id?: string
+          nominal?: number
+          status?: Database["public"]["Enums"]["pengajuan_status"]
+          tanggal_kirim?: string
+          updated_at?: string
+          vehicle_id?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "pengajuan_nominal_vehicle_id_fkey"
+            columns: ["vehicle_id"]
+            isOneToOne: false
+            referencedRelation: "vehicles"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
       profiles: {
         Row: {
           created_at: string
@@ -166,9 +222,34 @@ export type Database = {
         }
         Returns: boolean
       }
+      putuskan_pengajuan: {
+        Args: { _pengajuan_id: string; _setujui: boolean }
+        Returns: {
+          archived_at: string | null
+          catatan: string | null
+          created_at: string
+          diajukan_oleh: string
+          diajukan_username: string
+          diputuskan_at: string | null
+          diputuskan_oleh: string | null
+          id: string
+          nominal: number
+          status: Database["public"]["Enums"]["pengajuan_status"]
+          tanggal_kirim: string
+          updated_at: string
+          vehicle_id: string
+        }
+        SetofOptions: {
+          from: "*"
+          to: "pengajuan_nominal"
+          isOneToOne: true
+          isSetofReturn: false
+        }
+      }
     }
     Enums: {
       app_role: "dr" | "cel"
+      pengajuan_status: "menunggu" | "disetujui" | "ditolak"
       vehicle_status: "Pending" | "Jasa Parkir" | "Lunas"
     }
     CompositeTypes: {
@@ -298,6 +379,7 @@ export const Constants = {
   public: {
     Enums: {
       app_role: ["dr", "cel"],
+      pengajuan_status: ["menunggu", "disetujui", "ditolak"],
       vehicle_status: ["Pending", "Jasa Parkir", "Lunas"],
     },
   },

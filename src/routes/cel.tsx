@@ -8,6 +8,7 @@ import { Button } from "@/components/ui/button";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/lib/auth";
 import { catatAktivitas, useRealtimeSync, useVehicles } from "@/lib/vehicles";
+import { KirimNominalPanel } from "@/components/PengajuanNominal";
 import { formatRupiah, formatTanggal, hitungJumlahHari } from "@/lib/format";
 
 export const Route = createFileRoute("/cel")({
@@ -76,6 +77,8 @@ function CelPage() {
           <p className="text-base font-bold text-success">{selesai.length} Laporan</p>
         </div>
       </section>
+
+      <KirimNominalPanel vehicles={vehicles} username={username ?? "Pecel"} />
 
       <section>
         <div className="mb-3 flex items-center gap-2">

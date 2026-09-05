@@ -30,6 +30,7 @@ import {
   useVehicles,
   type Vehicle,
 } from "@/lib/vehicles";
+import { PengajuanMasukPanel } from "@/components/PengajuanNominal";
 import {
   formatPlat,
   formatRupiah,
@@ -175,6 +176,8 @@ function DrPage() {
           </table>
         </div>
       </section>
+
+      <PengajuanMasukPanel vehicles={vehicles} />
 
       <FormInputKendaraan username={username ?? "omdru"} />
     </div>
