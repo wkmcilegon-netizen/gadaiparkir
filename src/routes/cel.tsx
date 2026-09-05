@@ -135,7 +135,33 @@ function CelPage() {
             <thead>
               <tr className="bg-secondary/50">
                 {["Tgl Masuk", "Jenis", "Plat", "Pokok", "Jasa Parkir", "Hari", "Tgl Kirim", "Status"].map((h) => (
-...
+                  <th
+                    key={h}
+                    className="whitespace-nowrap border border-border px-3 py-2.5 text-[10px] font-bold uppercase tracking-wide text-muted-foreground"
+                  >
+                    {h}
+                  </th>
+                ))}
+              </tr>
+            </thead>
+            <tbody>
+              {vehicles.map((v) => (
+                <tr key={v.id} className="odd:bg-background even:bg-secondary/30">
+                  <td className="whitespace-nowrap border border-border px-3 py-2.5 font-mono text-[11px]">
+                    {formatTanggal(v.tanggal_masuk)}
+                  </td>
+                  <td className="whitespace-nowrap border border-border px-3 py-2.5 text-[11px] font-semibold">
+                    {v.jenis_kendaraan}
+                  </td>
+                  <td className="whitespace-nowrap border border-border px-3 py-2.5 font-mono text-[11px] font-bold text-primary">
+                    {v.plat_nomor}
+                  </td>
+                  <td className="whitespace-nowrap border border-border px-3 py-2.5 text-right font-mono text-[11px]">
+                    {formatRupiah(v.nominal_pokok)}
+                  </td>
+                  <td className="whitespace-nowrap border border-border px-3 py-2.5 text-right font-mono text-[11px]">
+                    {formatRupiah(v.jasa_parkir)}
+                  </td>
                   <td className="border border-border px-3 py-2.5 text-center text-[11px]">
                     {hitungJumlahHari(v.tanggal_masuk)}
                   </td>
